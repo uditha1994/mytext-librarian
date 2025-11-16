@@ -1,0 +1,31 @@
+{
+    "manifest_version": 3,
+    "name": "MyText Librarian",
+    "version": "1.0.0",
+    "description": "Save content with link - remember exactly what you want to read later",
+    "permissions": [
+        "storage",
+        "contextMenus",
+        "activeTab",
+        "tabs"
+    ],
+    "background": {
+        "service_worker": "background/background.js"
+    },
+    "content_scripts": [
+        {
+            "matchs":["<all_urls>"],
+            "js": ["content/content.js"],
+            "run_at": "document_end"
+        }
+    ],
+    "action": {
+        "default_popup": "popup/popup.html",
+        "default_title": "My Text Librarian"
+    },
+    "icons": {
+        "16": "icons/icon16.png",
+        "64": "icons/icon64.png",
+        "128": "icons/icon128.png"
+    }
+}

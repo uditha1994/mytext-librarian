@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyText Librarian</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <!-- header -->
+    <header class="header">
+        <div class="header content">
+            <h1 class="title">
+                <span class="icon">📚</span> MyText Librarian
+            </h1>
+            <div class="stats">
+                <span id="linkCount">0 links saved</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search bar -->
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search your saved links...">
+        <button class="clear-search" id="clearSearch">Clear Button</button>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="recent">Recent</button>
+        <button class="filter-tab" data-filter="tagged">Tagged</button>
+    </div>
+
+    <!-- link container -->
+    <main class="link-container" id="linkContainer">
+
+    </main>
+
+    <!-- empty state -->
+    <div class="empty-state" id="emptyState">
+        <div class="empty-icon"></div>
+        <h3>No links saved yet</h3>
+        <p>Highlight text on any webpage, right click, and select "Save Content with Link"</p>
+    </div>
+
+    <!-- loading state -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading your links...</p>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
