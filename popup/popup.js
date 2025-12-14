@@ -17,7 +17,7 @@ class LinkLibrarianPopup {
         this.elements = {
             linkCount: document.getElementById('linkCount'),
             searchInput: document.getElementById('searchInput'),
-            linkContainer: document.getElementById('linksContainer'),
+            linkContainer: document.getElementById('linkContainer'),
             clearSearch: document.getElementById('clearSearch'),
             loading: document.getElementById('loading'),
             filterTabs: document.querySelectorAll('.filter-tab'),
@@ -25,7 +25,61 @@ class LinkLibrarianPopup {
         }
     }
 
-    attachListeners() { }
+    attachListeners() {
+        //click to open link
+        document.querySelectorAll('.link-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.link-action') ||
+                    e.target.classList.contains('tag-input')) {
+                    return;
+                }
+
+                const linkId = item.dataset.linkId;
+                const link = this.allLinks.find(l => l.id === linkId);
+
+                if (link) {
+                    chrome.tabs.create({ url: link.url });
+                }
+            });
+        });
+
+        //delete button
+        document.querySelectorAll('.action-btn.delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const linkId = e.target.closest('.link-item').dataset.linkId;
+                this.deleteLink(linkId);
+            });
+        });
+
+        //edit tag buttons
+        document.querySelectorAll('.action-btn.edit-tags').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const linkItem = e.target.closest('.link-item');
+                const tagInput = linkItem.querySelector('.tag-input');
+                tagInput.classList.add('active');
+                tagInput.focus();
+                tagInput.select();
+            });
+        });
+
+        //tag input handling
+        document.querySelectorAll('.tag-input').forEach(input => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.saveTags(e.target);
+                } else if (e.key === 'Escape') {
+                    e.target.classList.remove('active');
+                }
+            });
+            input.addEventListener('blur', (e) => {
+                this.saveTags(e.target);
+            });
+        });
+
+    }
 
     async loadLinks() {
         try {
@@ -69,7 +123,7 @@ class LinkLibrarianPopup {
                 link.title.toLowerCase().includes(query) ||
                 link.selectedText.toLowerCase().includes(query) ||
                 link.domain.toLowerCase().includes(query) ||
-                (link.tags && link.tag.some(tag =>
+                (link.tags && link.tags.some(tag =>
                     tag.toLowerCase().includes(query)
                 ))
             );
@@ -147,6 +201,43 @@ class LinkLibrarianPopup {
             `;
     }
 
+    attachLinkEventListeners() {
+        //click to open link
+        document.querySelectorAll('.link-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.link-actions') || e.target.classList.contains('tag-input')) {
+                    return;
+                }
+                const linkId = item.dataset.linkId;
+                const link = this.allLinks.find(l => l.id === linkId);
+                if (link) {
+                    chrome.tabs.create({ url: link.url });
+                }
+            });
+        });
+
+        //delete button
+        document.querySelectorAll('.action-btn.detete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const linkId = e.target.closest('.link-item').dataset.linkId;
+                this.deleteLink(linkId);
+            });
+        });
+
+        //edit tag button
+        document.querySelectorAll('.action-btn.edit-tags').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const linkItem = e.target.closest('.link-item');
+                const tagInput = linkItem.querySelector('.tag-input');
+                tagInput.classList.add('active');
+                tagInput.focus();
+                tagInput.select();
+            });
+        });
+    }
+
     async deleteLink(linkId) {
         if (!confirm('Are you sure want to delete this link?')) {
             return;
@@ -166,15 +257,42 @@ class LinkLibrarianPopup {
         }
     }
 
-    async saveTags() { }
+    /**
+     * save tags for a link
+     * @param {HTML Elemeny} tagInput - the tag input element
+     */
+    async saveTags(tagInput) {
+        const linkItem = tagInput.closest('.link-item');
+        const linkId = linkItem.dataset.linkId;
+        const tagsText = tagInput.value.trim();
+
+        const tags = tagsText.split(',')
+            .map(tag => tag.trim())
+            .filter(tag => tag.length > 0);
+
+        try {
+            await StorageManager.updateLinkTags(linkId, tags);
+            //update local data
+            const link = this.allLinks.find(l => l.id === linkId);
+            if (link) {
+                link.tags = tags;
+            }
+
+            tagInput.classList.remove('active');
+            this.filterAndDisplayLinks();//refresh display
+        } catch (error) {
+            console.error('Error saving tags:', error);
+            this.showError('failed to save tags');
+        }
+    }
 
     /**
      * update the link count display
      */
     updateLinkCount() {
         const count = this.allLinks.length;
-        const text = count === 1 ? 'One link saved' : 
-        `${count} links saved`;
+        const text = count === 1 ? 'One link saved' :
+            `${count} links saved`;
         this.elements.linkCount.textContent = text;
     }
 
@@ -239,3 +357,15 @@ class LinkLibrarianPopup {
     }
 }
 
+//initialize the popup when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new LinkLibrarianPopup();
+});
+
+//listen for storage changes to real time UI update
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'local' && changes.saveLinks) {
+        //reload links if were changed with another context
+        window.location.reload();
+    }
+});

@@ -7,15 +7,21 @@
         "storage",
         "contextMenus",
         "activeTab",
-        "tabs"
+        "tabs",
+        "notifications",
+        "scripting"
     ],
     "background": {
         "service_worker": "background/background.js"
     },
     "content_scripts": [
         {
-            "matchs":["<all_urls>"],
-            "js": ["content/content.js"],
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content/content.js"
+            ],
             "run_at": "document_end"
         }
     ],
