@@ -2,8 +2,8 @@ class LinkLibrarianPopup {
     constructor() {
         this.allLinks = [];
         this.filterdLinks = [];
-        this.currentFilter = 'all',
-            this.searchQuery = '';
+        this.currentFilter = 'all';
+        this.searchQuery = '';
 
         this.initializeElements();
         this.attachListeners();
@@ -78,6 +78,31 @@ class LinkLibrarianPopup {
                 this.saveTags(e.target);
             });
         });
+
+        // Filter tabs
+        this.elements.filterTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.setActiveFilter(e.target.dataset.filter);
+            });
+        });
+
+        // Search input
+        if (this.elements.searchInput) {
+            this.elements.searchInput.addEventListener('input', (e) => {
+                this.searchQuery = e.target.value.trim();
+                this.filterAndDisplayLinks();
+            });
+        }
+
+        // Clear search button
+        if (this.elements.clearSearch) {
+            this.elements.clearSearch.addEventListener('click', () => {
+                this.elements.searchInput.value = '';
+                this.searchQuery = '';
+                this.filterAndDisplayLinks();
+            });
+        }
 
     }
 
@@ -259,6 +284,22 @@ class LinkLibrarianPopup {
             `${count} links saved`;
         this.elements.linkCount.textContent = text;
     }
+
+    /**
+     * Set active filter tab
+     * @param {string} filter - Filter type ('all', 'recent', 'tagged')
+     */
+    setActiveFilter(filter) {
+        this.currentFilter = filter;
+
+        // Update tab appearance
+        this.elements.filterTabs.forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.filter === filter);
+        });
+
+        this.filterAndDisplayLinks();
+    }
+
 
     highlightedSearchTerm(text) {
         if (!this.searchQuery.trim()) {
