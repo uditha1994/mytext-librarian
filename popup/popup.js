@@ -85,6 +85,7 @@ class LinkLibrarianPopup {
         try {
             this.showLoading(true);
             this.allLinks = await StorageManager.getAllLinks();
+            this.updateLinkCount();
             this.filterAndDisplayLinks();
         } catch (error) {
             console.error('Error loading links:', error);
@@ -199,43 +200,6 @@ class LinkLibrarianPopup {
                     value="${link.tags ? link.tags.join(', ') : ''}">
                 </div>
             `;
-    }
-
-    attachLinkEventListeners() {
-        //click to open link
-        document.querySelectorAll('.link-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                if (e.target.closest('.link-actions') || e.target.classList.contains('tag-input')) {
-                    return;
-                }
-                const linkId = item.dataset.linkId;
-                const link = this.allLinks.find(l => l.id === linkId);
-                if (link) {
-                    chrome.tabs.create({ url: link.url });
-                }
-            });
-        });
-
-        //delete button
-        document.querySelectorAll('.action-btn.detete').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const linkId = e.target.closest('.link-item').dataset.linkId;
-                this.deleteLink(linkId);
-            });
-        });
-
-        //edit tag button
-        document.querySelectorAll('.action-btn.edit-tags').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const linkItem = e.target.closest('.link-item');
-                const tagInput = linkItem.querySelector('.tag-input');
-                tagInput.classList.add('active');
-                tagInput.focus();
-                tagInput.select();
-            });
-        });
     }
 
     async deleteLink(linkId) {
