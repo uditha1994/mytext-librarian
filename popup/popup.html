@@ -4,54 +4,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyText Librarian</title>
+    <title>Link Librarian</title>
     <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
-    <!-- header -->
-    <header class="header">
-        <div class="header content">
-            <h1 class="title">
-                <span class="icon">📚</span> MyText Librarian
-            </h1>
-            <div class="stats">
-                <span id="linkCount">0 links saved</span>
-            </div>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
         </div>
-    </header>
-
-    <!-- Search bar -->
-    <div class="search-container">
-        <input type="text" class="search-input" id="searchInput" placeholder="Search your saved links...">
-        <button class="clear-search" id="clearSearch">Clear Button</button>
     </div>
 
-    <!-- Filter tabs -->
-    <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="all">All</button>
-        <button class="filter-tab" data-filter="recent">Recent</button>
-        <button class="filter-tab" data-filter="tagged">Tagged</button>
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Header with Glassmorphism -->
+        <header class="header">
+            <div class="header-glass">
+                <div class="header-content">
+                    <div class="brand">
+                        <div class="logo">
+                            <span class="logo-icon">📒</span>
+                            <div class="logo-text">
+                                <h1>Link Librarian</h1>
+                                <span class="tagline">Smart bookmarking</span>
+                            </div>
+                        </div>
+                        <div class="stats-badge" id="linkCount">
+                            <span class="count">0</span>
+                            <span class="label">saved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search your saved links..." class="search-input">
+                    <button id="clearSearch" class="clear-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Navigation -->
+        <nav class="filter-nav">
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">
+                    <span class="filter-icon">🌟</span>
+                    <span class="filter-text">All</span>
+                    <span class="filter-count" id="allCount">0</span>
+                </button>
+                <button class="filter-btn" data-filter="recent">
+                    <span class="filter-icon">⚡</span>
+                    <span class="filter-text">Recent</span>
+                    <span class="filter-count" id="recentCount">0</span>
+                </button>
+                <button class="filter-btn" data-filter="tagged">
+                    <span class="filter-icon">🏷️</span>
+                    <span class="filter-text">Tagged</span>
+                    <span class="filter-count" id="taggedCount">0</span>
+                </button>
+            </div>
+            <div class="filter-indicator"></div>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Loading State -->
+            <div class="loading-state" id="loading">
+                <div class="loading-animation">
+                    <div class="loading-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <p>Loading your library...</p>
+                </div>
+            </div>
+
+            <!-- Links Container -->
+            <div class="links-grid" id="linksContainer">
+                <!-- Links will be dynamically inserted here -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-animation">
+                    <div class="empty-icon">📖</div>
+                    <div class="empty-rings">
+                        <div class="ring ring-1"></div>
+                        <div class="ring ring-2"></div>
+                        <div class="ring ring-3"></div>
+                    </div>
+                </div>
+                <h3>Your library is empty</h3>
+                <p>Start saving links with context by highlighting text on any webpage and right-clicking!</p>
+                <div class="empty-tip">
+                    <span class="tip-icon">💡</span>
+                    <span>Tip: Use Ctrl+Click to save without highlighting</span>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- link container -->
-    <main class="link-container" id="linkContainer">
-
-    </main>
-
-    <!-- empty state -->
-    <div class="empty-state" id="emptyState">
-        <div class="empty-icon"></div>
-        <h3>No links saved yet</h3>
-        <p>Highlight text on any webpage, right click, and select "Save Content with Link"</p>
-    </div>
-
-    <!-- loading state -->
-    <div class="loading" id="loading">
-        <div class="loading-spinner"></div>
-        <p>Loading your links...</p>
-    </div>
-
+    <!-- Scripts -->
     <script src="../utils/storage.js"></script>
     <script src="popup.js"></script>
 </body>
